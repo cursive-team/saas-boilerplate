@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+
+/* Custom theme configuration */
+@theme {
+  /* Primary color palette (indigo - modern and professional) */
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+  --color-primary-950: #1e1b4b;
+
+  /* Font families */
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+/* Base styles */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/*
+ * NOTE: Reusable UI component styles are now defined as React components
+ * in /components/ui/ folder. This provides:
+ * - Type safety with TypeScript props
+ * - Consistent styling from theme configuration above
+ * - Easy customization via props (variant, size, etc.)
+ *
+ * To change the primary color, update the @theme section above
+ */

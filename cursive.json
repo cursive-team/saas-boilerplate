@@ -1,0 +1,71 @@
+{
+  "name": "SaaS Boilerplate",
+  "slug": "saas-boilerplate",
+  "version": "2.0.0",
+
+  "trial": {
+    "durationDays": 14,
+    "requireCard": true
+  },
+
+  "billing": {
+    "annualDiscountPercent": 10,
+    "allowCustomPlans": true
+  },
+
+  "referrals": {
+    "enabled": true,
+    "creditAmount": 2000
+  },
+
+  "plans": {
+    "starter": {
+      "name": "Starter",
+      "description": "Perfect for getting started",
+      "isPublic": true,
+      "monthlyPrice": 29,
+      "stripePriceIdMonthly": "price_starter_monthly",
+      "stripePriceIdAnnual": "price_starter_annual",
+      "features": {
+        "advancedReports": false,
+        "apiAccess": true,
+        "prioritySupport": false
+      },
+      "limits": {
+        "exampleResource": 100
+      }
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "For growing teams and businesses",
+      "isPublic": true,
+      "monthlyPrice": 79,
+      "stripePriceIdMonthly": "price_pro_monthly",
+      "stripePriceIdAnnual": "price_pro_annual",
+      "features": {
+        "advancedReports": true,
+        "apiAccess": true,
+        "prioritySupport": true
+      },
+      "limits": {
+        "exampleResource": 1000
+      }
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "description": "For large organizations with custom needs",
+      "isPublic": true,
+      "monthlyPrice": null,
+      "stripePriceIdMonthly": null,
+      "stripePriceIdAnnual": null,
+      "features": {
+        "advancedReports": true,
+        "apiAccess": true,
+        "prioritySupport": true
+      },
+      "limits": {
+        "exampleResource": -1
+      }
+    }
+  }
+}

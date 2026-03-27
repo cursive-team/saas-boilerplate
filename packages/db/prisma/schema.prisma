@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Authentication (Better Auth compatible)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String?
+  image         String?
+  avatarKey     String?   // Blob storage key for avatar
+
+  sessions      Session[]
+  accounts      Account[]
+  members       Member[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("user")
+}
+
+model Session {
+  id                   String   @id @default(cuid())
+  userId               String
+  token                String   @unique
+  expiresAt            DateTime
+  ipAddress            String?
+  userAgent            String?
+  activeOrganizationId String?  // Active org for this session
+
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?   @db.Text
+  password              String?   // For email/password auth
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+// ============================================
+// Organizations (Better Auth Organization Plugin)
+// ============================================
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  metadata  String?  @db.Text // JSON metadata
+
+  // Billing fields
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  planId               String    @default("starter")
+  billingInterval      String    @default("monthly") // "monthly" or "annual"
+  billingEmail         String?
+  trialEndsAt          DateTime?
+
+  // Custom pricing (for enterprise/sales-led deals)
+  // If set, overrides the plan's default pricing
+  customStripePriceId  String?   // Custom Stripe price ID
+  customPlanConfig     String?   @db.Text // JSON: custom limits/features
+
+  // Referral fields
+  referralCode    String?  @unique @default(cuid())
+  referredBy      String?  // Organization ID that referred this org
+  referralCredits Int      @default(0) // Credits in cents
+
+  members     Member[]
+  invitations Invitation[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("organization")
+}
+
+model Member {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  role           String   @default("member") // owner, admin, member
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, organizationId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String   @id @default(cuid())
+  email          String
+  organizationId String
+  role           String   @default("member")
+  status         String   @default("pending") // pending, accepted, cancelled, expired
+  expiresAt      DateTime
+  inviterId      String   // User ID of the inviter
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("invitation")
+}
+
+// ============================================
+// Billing (Usage Tracking)
+// ============================================
+
+model UsageRecord {
+  id             String   @id @default(cuid())
+  organizationId String
+  metric         String   // "api:calls", "storage", "tokens", etc.
+  value          BigInt   // Usage amount
+  periodStart    DateTime // Billing period start
+  periodEnd      DateTime // Billing period end
+
+  reportedToStripe    Boolean  @default(false)
+  stripeUsageRecordId String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([organizationId, metric, periodStart])
+  @@index([reportedToStripe, createdAt])
+  @@map("usage_record")
+}
+
+model ReferralCredit {
+  id            String   @id @default(cuid())
+  referrerOrgId String   // Organization that earned the credit
+  referredOrgId String   // Organization that was referred
+  amount        Int      // Credit amount in cents
+
+  createdAt     DateTime @default(now())
+
+  @@unique([referredOrgId])
+  @@index([referrerOrgId])
+  @@map("referral_credit")
+}
+
+// ============================================
+// Webhook Idempotency
+// ============================================
+
+model ProcessedStripeEvent {
+  id        String   @id // Stripe event ID (e.g., evt_xxx)
+  createdAt DateTime @default(now())
+
+  @@map("processed_stripe_event")
+}
