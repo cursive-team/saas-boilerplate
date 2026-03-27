@@ -96,8 +96,8 @@ This boilerplate gives you a fully working foundation:
 
 ### Local URLs
 
-| Service       | URL                                          |
-| ------------- | -------------------------------------------- |
+| Service       | URL                                           |
+| ------------- | --------------------------------------------- |
 | Frontend      | http://localhost:3000                         |
 | API           | http://localhost:4000                         |
 | MinIO Console | http://localhost:9001 (minioadmin/minioadmin) |
@@ -182,9 +182,9 @@ const { data: plans } = await api.billing.getPlans();
 ```typescript
 import { useSession, useActiveOrganization, useActiveMember } from '@/lib/auth-client';
 
-const { data: session } = useSession();           // Current user
-const { data: org } = useActiveOrganization();     // Current organization
-const { data: member } = useActiveMember();        // Current membership + role
+const { data: session } = useSession(); // Current user
+const { data: org } = useActiveOrganization(); // Current organization
+const { data: member } = useActiveMember(); // Current membership + role
 ```
 
 ### Feature and Role Gating
@@ -224,11 +224,11 @@ try {
 
 ### Components
 
-| Location                     | Purpose                                   |
-| ---------------------------- | ----------------------------------------- |
-| `src/components/ui/`         | Stateless primitives (Button, Input, Card) — always reuse these |
-| `src/components/`            | Feature components — stateful, handle API calls |
-| `src/components/gates.tsx`   | FeatureGate, RoleGate, UpgradePrompt, AccessDenied |
+| Location                   | Purpose                                                         |
+| -------------------------- | --------------------------------------------------------------- |
+| `src/components/ui/`       | Stateless primitives (Button, Input, Card) — always reuse these |
+| `src/components/`          | Feature components — stateful, handle API calls                 |
+| `src/components/gates.tsx` | FeatureGate, RoleGate, UpgradePrompt, AccessDenied              |
 
 ## Plans and Limits Configuration
 
@@ -246,7 +246,7 @@ All plan definitions live in `cursive.json`:
       "limits": { "exampleResource": 1000 }
     },
     "enterprise": {
-      "limits": { "exampleResource": -1 }   // -1 = unlimited
+      "limits": { "exampleResource": -1 } // -1 = unlimited
     }
   }
 }
@@ -278,12 +278,12 @@ Copy `.env.example` to `.env`. See the file for detailed setup instructions for 
 
 ### Required
 
-| Variable                | Purpose                       |
-| ----------------------- | ----------------------------- |
-| `DATABASE_URL`          | PostgreSQL connection string  |
-| `NEXT_PUBLIC_API_URL`   | Express API URL               |
-| `FRONTEND_URL`          | Frontend URL (CORS, emails)   |
-| `BETTER_AUTH_SECRET`    | Session signing secret        |
+| Variable              | Purpose                      |
+| --------------------- | ---------------------------- |
+| `DATABASE_URL`        | PostgreSQL connection string |
+| `NEXT_PUBLIC_API_URL` | Express API URL              |
+| `FRONTEND_URL`        | Frontend URL (CORS, emails)  |
+| `BETTER_AUTH_SECRET`  | Session signing secret       |
 
 ### Optional (enable as needed)
 
